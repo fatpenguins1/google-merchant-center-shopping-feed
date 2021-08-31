@@ -1,0 +1,206 @@
+{#
+/**
+ * Google Merchant Center - Shopping Feed plugin for Craft CMS 3.x
+ *
+ * Google Merchant Center - Shopping Feed Settings.twig
+ *
+ * @author    Fat Penguins
+ * @copyright Copyright (c) 2021 Fat Penguins
+ * @link      https://github.com/fatpenguins1
+ * @package   GoogleMerchantCenterShoppingFeed
+ * @since     1.0.0
+ */
+#}
+
+{% import "_includes/forms" as forms %}
+
+{% do view.registerAssetBundle("fatpenguins\\googlemerchantcentershoppingfeed\\assetbundles\\googlemerchantcentershoppingfeed\\GoogleMerchantCenterShoppingFeedAsset") %}
+
+{% set installed = craft.app.plugins.isPluginInstalled('commerce') %}
+
+{% if installed %}
+    <div class="field">
+        <h2>{{ 'URL path' }}</h2>
+        {{ forms.textField({
+            label: 'Please provide a URL path for the Google Merchant Center - Shopping feed',
+            id: 'productDataFeed',
+            name: 'productDataFeed',
+            value: settings['productDataFeed']}) 
+        }}
+        {% if craft.app.sites.getAllSites()|length > 1 %}
+            {% set availableSites = [] %}
+            {% for id, site in craft.app.sites.getAllSites() %}
+                {% set availableSites = availableSites|merge([{
+                    'label': site.name,
+                    'value': site.uid
+                }]) %}
+            {% endfor %}
+            {{ forms.selectField({
+                label: "Select site"|t('google-merchant-center-shopping-feed'),
+                id: "siteUid",
+                name: "siteUid",
+                required: true,
+                options: availableSites,
+                value: settings['siteUid'] ? settings['siteUid'],
+                errors: settings.errors and settings.errors['siteUid'] is defined ? settings.errors['siteUid']
+            }) }}
+        {% endif %}
+    </div>
+    <div class="field">
+        <div class="heading">
+            <h2>{{ 'Map the product fields with the Google Merchant feed'|t('google-merchant-center-shopping-feed') }}</h2>
+            <div class="instructions">
+                <p>Product data specification from <a href='https://support.google.com/merchants/answer/7052112?hl=en'>Google Merchant Center feed </a>.</p>
+            </div>
+        </div>
+    </div>
+
+    {% set availableFields = {
+        '' : '-',
+        'title' : 'Title',
+        'sku' : 'SKU',
+        'id' : 'Entry ID',
+        'price': 'Price',
+    } %}
+    {% for id, field in fields %}
+        {% set availableFields = availableFields|merge([{
+            'label': field.name,
+            'value': field.handle
+        }]) %}
+    {% endfor %}
+
+    
+    {{ forms.selectField({
+        label: "Product ID"|t('google-merchant-center-shopping-feed'),
+        id: "id",
+        name: "id",
+        required: true,
+        options: availableFields,
+        instructions: 'The ID [id] attribute allows you and Google to identify your products and to distinguish each product from the others.',
+        value: settings['id'] ? settings['id'] : 'sku',
+        errors: settings.errors and settings.errors['id'] is defined ? settings.errors['id']
+    }) }}
+
+    {{ forms.selectField({
+        label: "Product title"|t('google-merchant-center-shopping-feed'),
+        id: "title",
+        name: "title",
+        required: true,
+        options: availableFields,
+        instructions: 'Use the title attribute to clearly identify the product you’re selling. The title is one of the most prominent parts of your ad or free listing. A specific and accurate title will help us show your product to the right users.',
+        value: settings['title'] ? settings['title'] : 'title',
+        errors: settings.errors and settings.errors['title'] is defined ? settings.errors['title']
+    }) }}
+
+    {{ forms.selectField({
+        label: "Product price"|t('google-merchant-center-shopping-feed'),
+        id: "price",
+        name: "price",
+        required: true,
+        options: availableFields,
+        instructions: 'Use the price [price] attribute to tell users how much you’re charging for your product. If the cost per unit is important to your price information, also consider submitting the [unit_pricing_measure] and [unit_pricing_base_measure] attributes.',
+        value: settings['price'] ? settings['price'] : 'price',
+        errors: settings.errors and settings.errors['price'] is defined ? settings.errors['price']
+    }) }}
+
+    {{ forms.selectField({
+        label: "Sale price"|t('google-merchant-center-shopping-feed'),
+        id: "sale_price",
+        name: "sale_price",
+        required: false,
+        options: availableFields,
+        instructions: 'Use the sale price [sale_price] attribute to tell customers how much you\'re charging for your product during a sale. During a sale, your sale price will be shown as the current price. If your original price and sale price meet certain requirements, your original price may show along with the sale price, allowing people to see the difference between the two.',
+        value: settings['sale_price'] ? settings['sale_price'] : 'sale_price',
+        errors: settings.errors and settings.errors['sale_price'] is defined ? settings.errors['sale_price']
+    }) }}
+
+    {{ forms.selectField({
+        label: "Brand"|t('google-merchant-center-shopping-feed'),
+        id: "brand",
+        name: "brand",
+        required: true,
+        options: availableFields,
+        instructions: 'Provide the brand name of the product generally recognized by consumers Only provide your store name as the brand in case you manufacture the product, or your product falls into a generic brand category. If the product doesn’t have a brand, submit the manufacturer or supplier name under the brand attribute.',
+        value: settings['brand'],
+        errors: settings.errors and settings.errors['brand'] is defined ? settings.errors['brand']
+    }) }}
+
+    {{ forms.selectField({
+        label: "Product description"|t('google-merchant-center-shopping-feed'),
+        id: "description",
+        name: "description",
+        required: true,
+        options: availableFields,
+        instructions: 'Use the description [description] attribute to tell customers about your product. List product features, technical specifications, and visual attributes. A detailed description will help us show your product to the right customers.',
+        value: settings['description'],
+        errors: settings.errors and settings.errors['description'] is defined ? settings.errors['description']
+    }) }}
+
+    {{ forms.selectField({
+        label: "Image field"|t('google-merchant-center-shopping-feed'),
+        id: "image_link",
+        name: "image_link",
+        required: true,
+        options: availableFields,
+        instructions: 'Include the URL for your main product image with the image link [image_link] attribute. This image appears to potential customers in ads and free listings for your product.',
+        value: settings['image_link'],
+        errors: settings.errors and settings.errors['image_link'] is defined ? settings.errors['image_link']
+    }) }}
+
+    {{ forms.selectField({
+        label: "Additional Image field"|t('google-merchant-center-shopping-feed'),
+        id: "additional_image_link",
+        name: "additional_image_link",
+        required: false,
+        options: availableFields,
+        instructions: 'Use the [additional_image_link] attribute to provide more images for your product beyond the main image you provide in the [image_link] attribute. Additional images for your product can appear to potential customers and are commonly used to show a product from different angles or with product staging elements.',
+        value: settings['additional_image_link'],
+        errors: settings.errors and settings.errors['additional_image_link'] is defined ? settings.errors['additional_image_link']
+    }) }}
+
+    {{ forms.selectField({
+        label: "Manufacturer Part Number (MPN)"|t('google-merchant-center-shopping-feed'),
+        id: "mpn",
+        name: "mpn",
+        options: availableFields,
+        instructions: 'Use the MPN [mpn] attribute to submit your product’s Manufacturer Part Number (MPN). MPNs are used to uniquely identify a specific product among all products from the same manufacturer. Shoppers might search specifically for an MPN, so providing the MPN can help ensure that your product is shown in relevant situations.',
+        value: settings['mpn'],
+        errors: settings.errors and settings.errors['mpn'] is defined ? settings.errors['mpn']
+    }) }}
+
+    {{ forms.selectField({
+        label: "GTIN"|t('google-merchant-center-shopping-feed'),
+        id: "gtin",
+        name: "gtin",
+        options: availableFields,
+        instructions: 'Use the GTIN [gtin] attribute to submit Global Trade Item Numbers (GTINs). A GTIN uniquely identifies your product. This specific number helps us make your ad or unpaid listing richer and easier for your customers to find. Products submitted without any unique product identifiers are difficult to classify and may not be eligible for all Shopping programs or features.',
+        value: settings['gtin'],
+        errors: settings.errors and settings.errors['gtin'] is defined ? settings.errors['gtin']
+    }) }}
+
+
+    {% if craft.commerce.paymentCurrencies.getAllPaymentCurrencies()|length > 1 %}
+
+        {% set currencies = [] %}
+
+        {% for currency in craft.commerce.paymentCurrencies.getAllPaymentCurrencies() %}
+            {% set currencies = currencies|merge([{
+                'label': currency.iso,
+                'value': currency.iso
+            }]) %}
+        {% endfor %}
+
+        {{ forms.selectField({
+            label: "Image field"|t('google-merchant-center-shopping-feed'),
+            id: "currencyIso",
+            name: "currencyIso",
+            required: true,
+            options: currencies,
+            value: settings['currencyIso'],
+            errors: settings.errors and settings.errors['currencyIso'] is defined ? settings.errors['currencyIso']
+        }) }}
+
+    {% endif %}
+{% else %}
+    <p>{{ 'Craft Commerce is not installed'|t }}</p>
+{% endif %}

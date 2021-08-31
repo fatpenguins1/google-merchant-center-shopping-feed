@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
+    <channel>
+        <title>{{ systemName }}</title>
+        <description>{{ parseEnv(currentSite.baseUrl) }} - Google Merchant Feed</description>
+        <link>{{ parseEnv(currentSite.baseUrl) }}</link>
+        {% for product in products %}
+            <item>
+                {% if settings.id == 'sku' %}
+                    {% set id = product.defaultVariant.sku %}
+                {% else %}
+                    {% if attribute(product, settings.id) is defined %}
+                        {% set id = attribute(product, settings.id) %}
+                    {% elseif attribute(product.defaultVariant, settings.id) is defined %}
+                        {% set id = attribute(product.defaultVariant, settings.id) %}
+                    {% endif %}
+                {% endif %}
+                <g:id>{{ id }}</g:id>
+
+                <title>{{ attribute(product, settings.title) }}</title>
+
+                <description>{{ attribute(product, settings.description)|striptags }}</description>
+
+                <link>{{ product.getUrl() }}</link>
+
+
+                {% set imageLink = attribute(product, settings.image_link) %}
+                {% if imageLink|length %}
+                    <g:image_link>{{ parseEnv(currentSite.baseUrl) }}/{{ imageLink.one().getPath() }}</g:image_link>
+                {% endif %}
+
+                {% if settings.additional_image_link %}
+                    {% set additional_image_link = attribute(product, settings.additional_image_link) %}
+                    {% if additional_image_link|length %}
+                        <g:additional_image_link>{{ additional_image_link.one().getPath() }}</g:additional_image_link>
+                    {% endif %}
+                {% endif %}
+
+                {% if craft.commerce.paymentCurrencies.getAllPaymentCurrencies()|length == 1 %}
+                    {% set currency = craft.commerce.paymentCurrencies.getPrimaryPaymentCurrencyIso() %}
+                    <g:price>{{ attribute(product.defaultVariant, settings.price) }} {{ currency }}</g:price>
+                {% else %}
+                    <g:price>{{ attribute(product.defaultVariant, settings.price) }} {{ settings.currencyIso }}</g:price>
+                {% endif %}
+
+                {% if settings.sale_price %}
+                    {% if craft.commerce.paymentCurrencies.getAllPaymentCurrencies()|length == 1 %}
+                        <g:sale_price>{{ attribute(product.defaultVariant, settings.sale_price) }} {{ currency }}</g:sale_price>
+                    {% else %}
+                        <g:sale_price>{{ attribute(product.defaultVariant, settings.sale_price) }} {{ settings.currencyIso }}</g:sale_price>
+                    {% endif %}
+                {% endif %}
+
+                {% if product.defaultVariant.hasUnlimitedStock %}
+                    <g:availability>in stock</g:availability>
+                {% elseif product.defaultVariant.stock > 0 %}
+                    <g:availability>in stock</g:availability>
+                {% else %}
+                    <g:availability>out of stock</g:availability>
+                {% endif %}
+
+                <g:condition>new</g:condition>
+
+                {% if attribute(product, settings.brand) is instance of('craft\\elements\\db\\CategoryQuery') %}
+                    {% if attribute(product, settings.brand)|length %}
+                        {% set brand = attribute(product, settings.brand).one().title %}
+                    {% else %}
+                        {% set brand = '' %}
+                    {% endif %}
+                {% elseif attribute(product, settings.brand) is instance of('craft\\elements\\db\\EntryQuery') %}
+                    {% if attribute(product, settings.brand)|length %}
+                        {% set brand = attribute(product, settings.brand).one().title %}
+                    {% else %}
+                        {% set brand = '' %}
+                    {% endif %}
+                {% else %}
+                    {% set brand = attribute(product, settings.brand) %}
+                {% endif %}
+
+                <g:brand>{{ brand }}</g:brand>
+
+                {% if settings.mpn %}
+                    {% if settings.mpn == 'sku'  %}
+                        {% set npm = product.defaultVariant.sku %}
+                        <g:mpn>{{ npm }}</g:mpn>
+                    {% else %}
+                        <g:mpn>{{ attribute(product, settings.mpn) }}</g:mpn>
+                    {% endif %}
+                {% endif %}
+
+                {% if settings.gtin %}
+                    <g:gtin>{{ attribute(product, settings.mpn) }}</g:gtin>
+                {% endif %}
+
+            </item>
+
+
+        {% endfor %}
+    </channel>
+</rss>

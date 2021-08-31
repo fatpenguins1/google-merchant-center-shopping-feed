@@ -1,0 +1,49 @@
+{
+    "name": "fatpenguins/google-merchant-center-shopping-feed",
+    "description": "Generate product feeds (Google Shopping Feed) for Google Merchant Center. Start selling products online from your CraftCMS.",
+    "type": "craft-plugin",
+    "version": "1.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "google merchant center - shopping feed"
+    ],
+    "support": {
+        "docs": "https://github.com/Fat Penguins/google-merchant-center-shopping-feed/blob/master/README.md",
+        "issues": "https://github.com/Fat Penguins/google-merchant-center-shopping-feed/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Fat Penguins",
+            "homepage": "https://github.com/fatpenguins1"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0"
+    },
+    "require-dev": {
+      "craftcms/cms": "^3.2.0",
+      "codeception/codeception": "^3.0",
+      "vlucas/phpdotenv": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+          "fatpenguins\\googlemerchantcentershoppingfeed\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Google Merchant Center - Shopping Feed",
+        "handle": "google-merchant-center-shopping-feed",
+        "developer": "Fat Penguins",
+        "developerUrl": "https://github.com/fatpenguins1",
+        "documentationUrl": "https://github.com/Fat Penguins/google-merchant-center-shopping-feed/blob/master/README.md",
+        "changelogUrl": "https://raw.githubusercontent.com/Fat Penguins/google-merchant-center-shopping-feed/master/CHANGELOG.md",
+        "components": {
+            "googleMerchant": "fatpenguins\\googlemerchantcentershoppingfeed\\services\\GoogleMerchant"
+        },
+        "class": "fatpenguins\\googlemerchantcentershoppingfeed\\GoogleMerchantCenterShoppingFeed"
+    }
+}
